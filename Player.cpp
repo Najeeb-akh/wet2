@@ -16,7 +16,7 @@ Player& Player::operator=(const Player& other_player)
 
     this->playerId = other_player.playerId;
     this->team = other_player.team;
-    this->games_played = other_player.games_played;
+    this->gamesPlayed = other_player.gamesPlayed;
     this->cards = other_player.cards;
     this->games_before_joining = other_player.games_before_joining;
     this->cards = other_player.cards;
@@ -36,8 +36,6 @@ bool Player::operator<(const Player& other_player) const
     }
     
     return other_player.getID();
-
-
 }
 
 
@@ -57,20 +55,24 @@ bool Player::operator>(const Player& other_player) const
     return other_player.getID();
 }
 
+int Player::getID() const
+{
+    return this->playerId;
+}
 
 Team* Player::getPlayersTeam() const
 {
     return this->team;
 }
 
-int Player::getID() const
+permutation_t Player::getSpirit() const
 {
-    return this->playerId;
+    return this->spirit;
 }
 
 int Player::getGamesPlayed() const
 {
-    return this->games_played;
+    return this->gamesPlayed;
 }
 
 int Player::getGamesPlayedBeforeJoin() const
@@ -78,17 +80,45 @@ int Player::getGamesPlayedBeforeJoin() const
     return this->games_before_joining;
 }
 
+int Player::getAbility() const
+{
+    return this->ability;
+}
+
+int Player::getCards() const
+{
+    return this->cards;
+}
+
 bool Player::getGoalkeeper() const
 {
     return this->goalkeeper;
 }
 
+void Player::setPLayersTeam(Team* new_team)
+{
+    this->team = new_team;
+}
 
 void Player::setCards(int cards_added)
 {
     this->cards += cards_added;
 }
 
+void Player::setSpirit(permutation_t spirit)
+{
+    this->spirit = spirit;
+}
+
+void Player::setGamesPlayed(int games_added)
+{
+    this->gamesPlayed = games_added;
+}
+
+void Player::setGamesPlayedBeforeJoin(int games_before_joining)
+{
+    this->games_before_joining = games_before_joining;
+}
 
 void Player::updateGoalkeeper()
 {
@@ -102,8 +132,4 @@ void Player::updateGoalkeeper()
     }
 }
 
-void Player::setTeam(Team* new_team)
-{
-    this->team = new_team;
 
-}

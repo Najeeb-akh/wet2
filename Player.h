@@ -82,8 +82,6 @@ class Player{
     //                  and if he is a goalkeeper make him a regular player and not a goalkeeper
     void updateGoalkeeper();
 
-    void setTeam(Team* new_team)
-
 };
 
 

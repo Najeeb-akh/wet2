@@ -10,20 +10,26 @@ class Team;
 class Player{
 
     int playerId;
-    Team* team;
+    //Team* team;
     permutation_t spirit;
+    int index_in_uf;
     int gamesPlayed;
     int games_before_joining;
     int ability;
     int cards;
     bool goalkeeper;
+    
 
     //pointer to place in array of elements in union find
 
     public:
 
-    Player(int playerId, Team* team, const permutation_t &spirit, int gamesPlayed, int games_before_joining,
-                                             int ability, int cards, bool goalKeeper);
+    Player(int playerId, const permutation_t &spirit, int gamesPlayed = 0, int games_before_joining = 0,
+                                             int ability = 0, int cards = 0, bool goalKeeper = false, int index_in_uf = -1);
+
+    
+    Player() = default;
+
     ~Player()=default;
 
     Player(const Player& player) = default;
@@ -39,8 +45,6 @@ class Player{
     
     // getId: returns local player id
     int getID() const;
-
-    Team* getPlayersTeam() const;
     
     permutation_t getSpirit() const;
 
@@ -49,6 +53,8 @@ class Player{
     int getGamesPlayedBeforeJoin() const;
     
     int getAbility() const;
+
+    int getIndexInUF() const;
     
     //getCards: return the cards of the local player
     int getCards() const;
@@ -60,15 +66,13 @@ class Player{
      */
     bool getGoalkeeper() const;
 
-
-    // setTeam: set the local player team into the team given as a param
-    void setPLayersTeam(Team* new_team);
-
     // setcards: set the local player cards field to the param given.
     void setCards(int cards);
 
 
     void setSpirit(permutation_t spirit);
+
+    void setIndexInUF(int new_index);
 
     // setGamesPlayed: set the local player games_played field to the param given.
     void setGamesPlayed(int games_added);

@@ -18,10 +18,10 @@ public:
     bool reHash(int new_size);
     void clear();
     void clearHashTable();
-    bool Insert(int key, Player* info);
-    bool Delete(int key, bool flag);
+    bool Insert(Player* info);
+    //bool Delete(int key, bool flag);
     bool Find(int key);
-    Player* GetInfoPtr(int key);
+    Player* GetPlayer(int key);
     Player* getTable();
     int getNumOfElements() const;
     void setNumOfElements(int new_num);
@@ -123,10 +123,10 @@ void HashTable::clear()
         return;
     }
 
-    for(int i=0; i<size; i++)
-    {        
-        table[i].clear(); //clears the ith list
-    }
+    // for(int i=0; i<size; i++)
+    // {        
+    //     table[i].clear(); //clears the ith list
+    // }
 
     delete [] table;
     table = nullptr;
@@ -137,17 +137,15 @@ void HashTable::clear()
 
 
  
-/*bool HashTable::Insert(int key, Player* info)
+bool HashTable::Insert(Player* player_to_insert)
 {
     if (num_of_elements == 0)
     {
-        this->table = new LinkedList();
+        this->table = new Player();
     }
-    int hash_res = hash_func(key);
-    if(table[hash_res].Insert(key, info) == false)
-    {
-        return false;
-    }
+
+    int hash_res = hash_func(player_to_insert->getID());
+    table[hash_res] = Player(*player_to_insert);
     num_of_elements++;
     if(num_of_elements <= size/4)
     {
@@ -159,7 +157,7 @@ void HashTable::clear()
     }
 
     return true;
-}*/
+}
 
 
  
@@ -215,7 +213,7 @@ bool HashTable::Find(int key)
 
 
  
-Player* HashTable::GetInfoPtr(int key)
+Player* HashTable::GetPlayer(int key)
 {
     if(table == nullptr)
     {

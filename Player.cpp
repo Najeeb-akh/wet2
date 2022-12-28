@@ -1,5 +1,5 @@
 //#include "Team.h"
-#include "player.h"
+#include "Player.h"
 
 
 Player::Player(int playerId, const permutation_t &spirit, int gamesPlayed, int games_before_joining,

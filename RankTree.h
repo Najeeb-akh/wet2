@@ -1,7 +1,7 @@
 #ifndef RANKTREE_H
 #define RANKTREE_H
 
-#include "Node.h"
+#include "AVLnode.h"
 
 #define ILLEGAL_BF 2
 using std::shared_ptr;

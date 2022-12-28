@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Node.h"
+#include "AVLnode.h"
 #include "wet2util.h"
 
 class Team;

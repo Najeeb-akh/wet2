@@ -1,8 +1,18 @@
 #include "worldcup23a2.h"
+#include "Team.h"
+#include "RankTree.h"
+#include "HashTable.h"
+#include "UnionFind.h"
+#include "Player.h"
 
+
+//Najeeb
 world_cup_t::world_cup_t()
 {
-	// TODO: Your code goes here
+	RankTree<Team> teamsId;
+	RankTree<Team> teamsAbilities;
+	HashTable allPlayers;
+
 }
 
 world_cup_t::~world_cup_t()
@@ -10,18 +20,21 @@ world_cup_t::~world_cup_t()
 	// TODO: Your code goes here
 }
 
+//Asaad
 StatusType world_cup_t::add_team(int teamId)
 {
 	// TODO: Your code goes here
 	return StatusType::SUCCESS;
 }
 
+//Asaad
 StatusType world_cup_t::remove_team(int teamId)
 {
 	// TODO: Your code goes here
 	return StatusType::FAILURE;
 }
 
+//Najeeb
 StatusType world_cup_t::add_player(int playerId, int teamId,
                                    const permutation_t &spirit, int gamesPlayed,
                                    int ability, int cards, bool goalKeeper)
@@ -30,6 +43,7 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 	return StatusType::SUCCESS;
 }
 
+//Asaad
 output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 {
 	// TODO: Your code goes here
@@ -42,30 +56,35 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId)
 	return 22;
 }
 
+//Najeeb
 StatusType world_cup_t::add_player_cards(int playerId, int cards)
 {
 	// TODO: Your code goes here
 	return StatusType::SUCCESS;
 }
 
+//Najeeb
 output_t<int> world_cup_t::get_player_cards(int playerId)
 {
 	// TODO: Your code goes here
 	return StatusType::SUCCESS;
 }
 
+//Najeeb
 output_t<int> world_cup_t::get_team_points(int teamId)
 {
 	// TODO: Your code goes here
 	return 30003;
 }
 
+//Asaad
 output_t<int> world_cup_t::get_ith_pointless_ability(int i)
 {
 	// TODO: Your code goes here
 	return 12345;
 }
 
+//Asaad
 output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId)
 {
 	// TODO: Your code goes here

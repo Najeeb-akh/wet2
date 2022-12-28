@@ -1,10 +1,10 @@
 #include "Team.h"
-#include "player.h"
+#include "Player.h"
 
 
-Player::Player(int playerId, Team* team, const permutation_t &spirit, int gamesPlayed, int games_before_joining,
-    int ability, int cards, bool goalKeeper): playerId(playerId), team(team), spirit(spirit), gamesPlayed(gamesPlayed), games_before_joining(games_before_joining),
-    ability(ability), cards(cards), goalkeeper(goalkeeper){}
+Player::Player(int playerId, const permutation_t &spirit, int gamesPlayed, int games_before_joining,
+    int ability, int cards, bool goalKeeper, int index_in_uf): playerId(playerId), spirit(spirit), gamesPlayed(gamesPlayed), games_before_joining(games_before_joining),
+    ability(ability), cards(cards), goalkeeper(goalkeeper), index_in_uf(index_in_uf){}
 
 
 Player& Player::operator=(const Player& other_player)
@@ -15,7 +15,6 @@ Player& Player::operator=(const Player& other_player)
     }
 
     this->playerId = other_player.playerId;
-    this->team = other_player.team;
     this->gamesPlayed = other_player.gamesPlayed;
     this->cards = other_player.cards;
     this->games_before_joining = other_player.games_before_joining;
@@ -60,14 +59,14 @@ int Player::getID() const
     return this->playerId;
 }
 
-Team* Player::getPlayersTeam() const
-{
-    return this->team;
-}
-
 permutation_t Player::getSpirit() const
 {
     return this->spirit;
+}
+
+int Player::getIndexInUF() const
+{
+    return this->index_in_uf;
 }
 
 int Player::getGamesPlayed() const
@@ -95,14 +94,17 @@ bool Player::getGoalkeeper() const
     return this->goalkeeper;
 }
 
-void Player::setPLayersTeam(Team* new_team)
-{
-    this->team = new_team;
-}
+
+
 
 void Player::setCards(int cards_added)
 {
     this->cards += cards_added;
+}
+
+void Player::setIndexInUF(int new_index)
+{
+    this->index_in_uf= new_index;
 }
 
 void Player::setSpirit(permutation_t spirit)

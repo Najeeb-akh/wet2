@@ -2,6 +2,7 @@
 #define TEAM_H
 
 #include "wet2util.h"
+#include "UnionFind.h"
 
 typedef enum{
     TEAM_ID = 0,
@@ -20,6 +21,7 @@ class Team
     int goalKeepersCtr;
     SortByInfo sortingType;
     bool is_active;
+    PlayerInUF* head_of_team;
 
     public:
     /**
@@ -32,7 +34,7 @@ class Team
 
         Team(int TeamId, int points= 0, int player_num = 0, bool has_goalkeeper=false,
                          int total_abilities = 0, permutation_t mult_spirits = permutation_t(), int games_counter = 0, int goalKeeperCtr = 0,
-                         SortByInfo sortingType = TEAM_ID, bool is_active = true);
+                         SortByInfo sortingType = TEAM_ID, bool is_active = true, PlayerInUF* head_of_team = nullptr);
         /**
          * @brief Destroy the Team object
          * 
@@ -156,6 +158,8 @@ class Team
 
         SortByInfo getSortingType();
 
+        PlayerInUF* getHeadOfTeam();
+
         bool isActive();
 
         
@@ -210,6 +214,9 @@ class Team
         void setHasGoalKeeper(bool changed_value);
 
 
+        void setHeadOfTeam(PlayerInUF* new_head);
+
+        
         /**
          * @brief adds the goalKeepers counter by 1
          * 

@@ -51,7 +51,7 @@ class UF
     public:
     UF();
     /// mult_before might change to spirit of player
-    void Insert(int PlayerId, permutation_t mult_before, Team* team = nullptr);
+    void Insert(int PlayerId, permutation_t mult_before,Team* team1);
     int getSize() const;
     int getIndex() const;
     void setSize(int new_size);
@@ -63,14 +63,14 @@ class UF
 
 };
 
-UF::UF():index(0), max_size(0),elements(nullptr){}
+UF::UF():index(0), max_size(0),elements(nullptr){};
 
-void UF::Insert(int PlayerId, permutation_t mult_before, Team* team)
+void UF::Insert(int PlayerId, permutation_t mult_before,Team* team1)
 {
     if(elements == nullptr)
     {
-        elements = new PlayerInUF(PlayerId, mult_before, team, index);
-        team->setHeadOfTeam(elements);
+        elements = new PlayerInUF(PlayerId, mult_before, team1, index);
+        team1->setHeadOfTeam(elements);
         max_size = 1;
         index++;
     }
@@ -92,10 +92,10 @@ void UF::Insert(int PlayerId, permutation_t mult_before, Team* team)
        delete new_arr;
     }
     
-    elements[index] = PlayerInUF(PlayerId, mult_before, team, index);
+    elements[index] = PlayerInUF(PlayerId, mult_before, team1, index);
     index++;
 
-    if(team->getHeadOfTeam() != nullptr)
+    if(team1->getHeadOfTeam() != nullptr)
     {
         int head_of_group = team->getHeadOfTeam()->parent;
         Union(head_of_group, index);

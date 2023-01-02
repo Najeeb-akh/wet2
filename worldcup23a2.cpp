@@ -9,9 +9,10 @@
 //Najeeb
 world_cup_t::world_cup_t()
 {
-	RankTree<Team> teamsId;
-	RankTree<Team> teamsAbilities;
-	HashTable allPlayers;
+	this->teamsId = RankTree<Team>();
+	this->teamsAbilities= RankTree<Team>();
+	this->allPlayers = HashTable();
+	this->unionfind = UF() ;
 
 }
 
@@ -23,7 +24,7 @@ world_cup_t::~world_cup_t()
 //Asaad
 StatusType world_cup_t::add_team(int teamId)
 {
-	// TODO: Your code goes here
+	
 	return StatusType::SUCCESS;
 }
 
@@ -39,7 +40,33 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
                                    const permutation_t &spirit, int gamesPlayed,
                                    int ability, int cards, bool goalKeeper)
 {
-	// TODO: Your code goes here
+	if(playerId <= 0 || teamId<= 0 || spirit.isvalid() == false || gamesPlayed < 0 || cards <0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+
+	//find player's team
+	Team tmp_team = Team(teamId);
+	if(teamsId.Find(tmp_team) == nullptr)
+	{
+		return StatusType::FAILURE;
+	}
+
+	//insertion into the hash table
+	Player* new_player = new Player(playerId, spirit, gamesPlayed, 0, ability, cards,goalKeeper);
+	if(allPlayers.Insert(new_player) == false)
+	{
+		return StatusType::FAILURE;
+	}
+	
+	//insertion into the union find structure
+	
+	//save the previos mult_spirit
+	int last_index = unionfind.getIndex();
+	permutation_t last_mult = (teamsId.Find(tmp_team)->InfoPtr()->getMultSpirits());
+
+	PlayerInUF* new_player_inUF = new PlayerInUF(playerId, last_mult, teamsId.Find(tmp_team)->InfoPtr());
+
 	return StatusType::SUCCESS;
 }
 
@@ -59,22 +86,59 @@ output_t<int> world_cup_t::num_played_games_for_player(int playerId)
 //Najeeb
 StatusType world_cup_t::add_player_cards(int playerId, int cards)
 {
-	// TODO: Your code goes here
+	if(playerId <= 0 || cards < 0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	if(allPlayers.Find(playerId) == false)
+	{
+		return StatusType::FAILURE;	
+	}
+	else
+	{
+		allPlayers.GetPlayer(playerId)->setCards(cards);
+	}
+
 	return StatusType::SUCCESS;
 }
 
 //Najeeb
 output_t<int> world_cup_t::get_player_cards(int playerId)
 {
-	// TODO: Your code goes here
+	if(playerId <= 0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+
+	if(allPlayers.Find(playerId) == false)
+	{
+		return StatusType::FAILURE;	
+	}
+	else
+	{
+		return (allPlayers.GetPlayer(playerId)->getCards());
+	}
+
+	
 	return StatusType::SUCCESS;
 }
 
 //Najeeb
 output_t<int> world_cup_t::get_team_points(int teamId)
 {
-	// TODO: Your code goes here
-	return 30003;
+	if(teamId <= 0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	if(teamsId.Find(teamId) == false)
+	{
+		return StatusType::FAILURE;
+	}
+
+	Team tmp_team = Team(teamId);
+	return (teamsId.Find(tmp_team)->InfoPtr()->getTotalPoints());
+	
+	//return 30003;
 }
 
 //Asaad

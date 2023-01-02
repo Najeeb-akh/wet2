@@ -16,12 +16,19 @@
 #define WORLDCUP23A2_H_
 
 #include "wet2util.h"
+#include "Team.h"
+#include "RankTree.h"
+#include "HashTable.h"
+#include "UnionFind.h"
+#include "Player.h"
 
 class world_cup_t {
 private:
-	//
-	// Here you may add anything you want
-	//
+	RankTree<Team>* teams_tree;
+	RankTree<Team>* teams_by_abilities;
+	HashTable players_hash;
+	UF players_uf;
+
 	
 public:
 	// <DO-NOT-MODIFY> {

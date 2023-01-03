@@ -30,13 +30,13 @@ StatusType world_cup_t::add_team(int teamId)
 	}
 
 	Team team_to_find = Team(teamId);
-	if(this->teams_tree->Find(team_to_find))
+	if(this->teamsId.Find(team_to_find))
 	{
 		return StatusType::FAILURE;
 	}
 
 	Team* team_to_insert = new Team(teamId);
-	this->teams_tree.Insert(team_to_insert);
+	this->teamsId.Insert(team_to_insert);
 	return StatusType::SUCCESS;
 }
 
@@ -93,8 +93,8 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 	Team team1_to_find = Team(teamId1);
 	Team team2_to_find = Team(teamId2);
 
-	AVLnode<Team>* team1 = this->teams_tree.Find(team1_to_find);
-	AVLnode<Team>* team2 = this->teams_tree.Find(team2_to_find);
+	AVLnode<Team>* team1 = this->teamsId.Find(team1_to_find);
+	AVLnode<Team>* team2 = this->teamsId.Find(team2_to_find);
 	if(team1 == nullptr || team2 == nullptr)
 	{
 		return StatusType::FAILURE;
@@ -102,10 +102,6 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 
 	team1->Info().bumpGamesCounter();
 	team2->Info().bumpGamesCounter();
-
-	
-
-
 
 	return StatusType::SUCCESS;
 }
@@ -183,19 +179,18 @@ output_t<int> world_cup_t::get_ith_pointless_ability(int i)
 		return StatusType::INVALID_INPUT;
 	}
 
-	if(this->teams_by_abilities == NULL || this->teams_by_abilities->NumOfElements() < i)
+	if(this->teamsAbilities.NumOfElements() < i)
 	{
 		return StatusType::FAILURE;
 	}
 
-	return this->teams_by_abilities->Select(i)->info->getTeamId();
+	return this->teamsAbilities.Select(i)->info->getTeamId();
 }
 
 //Asaad
 output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId)
 {
 	// TODO: Your code goes here
-	if()
 	return permutation_t();
 }
 

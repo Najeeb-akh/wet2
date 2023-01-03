@@ -30,7 +30,7 @@ StatusType world_cup_t::add_team(int teamId)
 	}
 
 	Team team_to_find = Team(teamId);
-	if(this->teamsId.Find(team_to_find))
+	if(this->teams_tree->Find(team_to_find))
 	{
 		return StatusType::FAILURE;
 	}
@@ -43,7 +43,32 @@ StatusType world_cup_t::add_team(int teamId)
 //Asaad
 StatusType world_cup_t::remove_team(int teamId)
 {
-	// TODO: Your code goes here
+	if(teamId <= 0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+
+	Team tmp_team = Team(teamId);
+	if(this->teams_tree.Find(tmp_team) == nullptr)
+	{
+		return StatusType::FAILURE;
+	}
+
+	AVLnode<Team>* team_to_delete = this->teams_tree.Find(tmp_team);
+
+	Team* team_to_find = new Team(teamId, tmp_team.getTotalPoints(), tmp_team.getNumOfPlayers(), tmp_team.canParticipate(), tmp_team.getAbilities());
+	team_to_find->setSortingType(SortByInfo::ABILITIES);
+
+	AVLnode<Team>* team_by_ability_to_delete = this->teams_by_abilities.Find(*team_to_find);
+
+	team_to_delete->Info().setHeadOfTeam(nullptr);
+	team_to_delete->Info().deactivateTeam();
+
+	team_by_ability_to_delete->Info().setHeadOfTeam(nullptr);
+	team_by_ability_to_delete->Info().deactivateTeam();
+
+
+
 	return StatusType::FAILURE;
 }
 
@@ -102,6 +127,10 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 
 	team1->Info().bumpGamesCounter();
 	team2->Info().bumpGamesCounter();
+
+	
+
+
 
 	return StatusType::SUCCESS;
 }

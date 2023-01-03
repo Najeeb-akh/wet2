@@ -51,7 +51,7 @@ class UF
     public:
     UF();
     /// mult_before might change to spirit of player
-    void Insert(int PlayerId, permutation_t mult_before, Team* team);
+    void Insert(int PlayerId, permutation_t mult_before, Team* team = nullptr);
     int getSize() const;
     int getIndex() const;
     void setSize(int new_size);
@@ -65,14 +65,14 @@ class UF
     int Findaux(int a);
 };
 
-UF::UF():index(0), max_size(0),elements(nullptr){}
+UF::UF():index(0), max_size(0),elements(nullptr){};
 
-void UF::Insert(int PlayerId, permutation_t mult_before, Team* team)
+void UF::Insert(int PlayerId, permutation_t mult_before,Team* team1)
 {
     if(elements == nullptr)
     {
-        *elements = new PlayerInUF(PlayerId, spirit, spirit, team, index);
-        team->setHeadOfTeam(0);
+        elements = new PlayerInUF(PlayerId, mult_before, team, index);
+        team->setHeadOfTeam(elements);
         max_size = 1;
         index++;
         return;
@@ -96,11 +96,10 @@ void UF::Insert(int PlayerId, permutation_t mult_before, Team* team)
 
     }
     
-    elements[index] = new PlayerInUF(PlayerId, spirit, spirit, team, index);
-    elements[index]->multspirit = team->getMultSpirits() * spirit; 
+    elements[index] = PlayerInUF(PlayerId, mult_before, team, index);
     index++;
 
-    if(team->getHeadOfTeam() != nullptr)
+    if(team1->getHeadOfTeam() != nullptr)
     {
         int head_of_group = team->getHeadOfTeam()->parent;
         JoinTeam(head_of_group, index);

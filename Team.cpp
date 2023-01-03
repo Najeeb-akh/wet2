@@ -3,7 +3,11 @@
 
 Team::Team(int TeamId, int points, int player_num, bool has_goalkeeper,
            int total_abilities, permutation_t mult_spirits, int games_counter , int goalkeeper_ctr,
+<<<<<<< HEAD
            SortByInfo sortingType, bool is_active, PlayerInUF* head_of_team)
+=======
+           SortByInfo sortingType, bool is_active, PlayerInUF* head_of_team = nullptr)
+>>>>>>> 2cb9a11344b18894c4b61571da9f63945c7442a9
 {
     this->TeamId = TeamId;
     this->total_points = points;

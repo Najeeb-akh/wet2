@@ -16,7 +16,7 @@ class PlayerInUF
     permutation_t to_mult;
 
     PlayerInUF(int playerId, permutation_t spirit, permutation_t multspirit, Team* team = nullptr, int parent = 0, int tree_size = 0,
-                 permutation_t to_mult = permutation_t(new int[1,1,1,1,1])):playerId(playerId), spirit(spirit), multspirit(multspirit),team(team), parent(parent), tree_size(0){}
+                 permutation_t to_mult = permutation_t(new int[1,2,3,4,5])):playerId(playerId), spirit(spirit), multspirit(multspirit),team(team), parent(parent), tree_size(0){}
     PlayerInUF():playerId(0), multspirit(), team(nullptr), parent(0), tree_size(1){};
     ~PlayerInUF()
     {
@@ -51,7 +51,7 @@ class UF
     public:
     UF();
     /// mult_before might change to spirit of player
-    void Insert(int PlayerId, permutation_t mult_before, Team* team = nullptr);
+    void Insert(int PlayerId, permutation_t mult_before, Team* team);
     int getSize() const;
     int getIndex() const;
     void setSize(int new_size);
@@ -65,14 +65,14 @@ class UF
     int Findaux(int a);
 };
 
-UF::UF():index(0), max_size(0),elements(nullptr){};
+UF::UF():index(0), max_size(0),elements(nullptr){}
 
-void UF::Insert(int PlayerId, permutation_t mult_before,Team* team1)
+void UF::Insert(int PlayerId, permutation_t spirit, Team* team)
 {
     if(elements == nullptr)
     {
-        elements = new PlayerInUF(PlayerId, mult_before, team, index);
-        team->setHeadOfTeam(elements);
+        *elements = new PlayerInUF(PlayerId, spirit, spirit, team, index);
+        team->setHeadOfTeam(0);
         max_size = 1;
         index++;
         return;
@@ -96,10 +96,11 @@ void UF::Insert(int PlayerId, permutation_t mult_before,Team* team1)
 
     }
     
-    elements[index] = PlayerInUF(PlayerId, mult_before, team, index);
+    elements[index] = new PlayerInUF(PlayerId, spirit, spirit, team, index);
+    elements[index]->multspirit = team->getMultSpirits() * spirit; 
     index++;
 
-    if(team1->getHeadOfTeam() != nullptr)
+    if(team->getHeadOfTeam() != nullptr)
     {
         int head_of_group = team->getHeadOfTeam()->parent;
         JoinTeam(head_of_group, index);
@@ -114,13 +115,13 @@ int UF::Find(int a)
 
     int zero = 0;
     int* last_node = &zero;
-    permutation_t toMult = this->getToMult(a, permutation_t(new int[1,1,1,1,1]), last_node);
-    permutation_t toDevide = permutation_t(new int[1,1,1,1,1]);
+    permutation_t toMult = this->getToMult(a, permutation_t(new int[1,2,3,4,5]), last_node);
+    permutation_t toDevide = permutation_t(new int[1,2,3,4,5]);
 
     int tmp = a;
     while(tmp != root)
     {
-        elements[tmp]->to_mult = toMult * elements[tmp]->to_mult;
+        elements[tmp]->to_mult = toMult * toDevide.inv();
         toDevide = toDevide * elements[tmp]->to_mult;
         tmp = elements[tmp]->parent;
     }

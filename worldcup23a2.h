@@ -24,10 +24,10 @@
 
 class world_cup_t {
 private:
-	RankTree<Team> teams_tree;
-	RankTree<Team> teams_by_abilities;
-	HashTable players_hash;
-	UF players_uf;
+	RankTree<Team> teamsId;
+	RankTree<Team> teamsAbilities;
+	HashTable allPlayers;
+	UF unionfind;
 
 	
 public:

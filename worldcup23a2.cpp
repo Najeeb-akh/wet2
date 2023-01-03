@@ -30,7 +30,7 @@ StatusType world_cup_t::add_team(int teamId)
 	}
 
 	Team team_to_find = Team(teamId);
-	if(this->teams_tree->Find(team_to_find))
+	if(this->teamsId.Find(team_to_find))
 	{
 		return StatusType::FAILURE;
 	}
@@ -49,17 +49,17 @@ StatusType world_cup_t::remove_team(int teamId)
 	}
 
 	Team tmp_team = Team(teamId);
-	if(this->teams_tree.Find(tmp_team) == nullptr)
+	if(this->teamsId.Find(tmp_team) == nullptr)
 	{
 		return StatusType::FAILURE;
 	}
 
-	AVLnode<Team>* team_to_delete = this->teams_tree.Find(tmp_team);
+	AVLnode<Team>* team_to_delete = this->teamsId.Find(tmp_team);
 
 	Team* team_to_find = new Team(teamId, tmp_team.getTotalPoints(), tmp_team.getNumOfPlayers(), tmp_team.canParticipate(), tmp_team.getAbilities());
 	team_to_find->setSortingType(SortByInfo::ABILITIES);
 
-	AVLnode<Team>* team_by_ability_to_delete = this->teams_by_abilities.Find(*team_to_find);
+	AVLnode<Team>* team_by_ability_to_delete = this->teamsAbilities.Find(*team_to_find);
 
 	team_to_delete->Info().setHeadOfTeam(nullptr);
 	team_to_delete->Info().deactivateTeam();

@@ -61,13 +61,23 @@ StatusType world_cup_t::remove_team(int teamId)
 
 	AVLnode<Team>* team_by_ability_to_delete = this->teamsAbilities.Find(*team_to_find);
 
+	delete team_to_find;
+	PlayerInUF* headOfGroup = team_to_delete->InfoPtr()->getHeadOfTeam();
+
 	team_to_delete->Info().setHeadOfTeam(nullptr);
 	team_to_delete->Info().deactivateTeam();
 
 	team_by_ability_to_delete->Info().setHeadOfTeam(nullptr);
 	team_by_ability_to_delete->Info().deactivateTeam();
 
-
+	Team* team_outside_of_tree = new Team(team_to_delete->InfoPtr()->getTeamId(), team_to_delete->InfoPtr()->getTotalPoints(),
+										 team_to_delete->InfoPtr()->getNumOfPlayers(), true, team_to_delete->InfoPtr()->getAbilities()
+										 ,team_to_delete->InfoPtr()->getMultSpirits(), team_to_delete->InfoPtr()->getGamesCounter());
+										 
+	
+	headOfGroup->team = team_outside_of_tree;
+	this->teamsId.DeleteNode(team_to_delete->InfoPtr());
+	this->teamsAbilities.DeleteNode(team_by_ability_to_delete->InfoPtr());
 
 	return StatusType::FAILURE;
 }
@@ -84,13 +94,14 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 
 	//find player's team
 	Team tmp_team = Team(teamId);
+
 	if(teamsId.Find(tmp_team) == nullptr)
 	{
 		return StatusType::FAILURE;
 	}
 
 	//insertion into the hash table
-	Player* new_player = new Player(playerId, spirit, gamesPlayed, 0, ability, cards,goalKeeper);
+	Player* new_player = new Player(playerId, spirit, gamesPlayed, 0, ability, cards,goalKeeper, this->unionfind.getIndex());
 	if(allPlayers.Insert(new_player) == false)
 	{
 		return StatusType::FAILURE;
@@ -102,7 +113,49 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 	int last_index = unionfind.getIndex();
 	permutation_t last_mult = (teamsId.Find(tmp_team)->InfoPtr()->getMultSpirits());
 
-	PlayerInUF* new_player_inUF = new PlayerInUF(playerId, last_mult, teamsId.Find(tmp_team)->InfoPtr());
+	PlayerInUF* new_player_in_uf = new PlayerInUF(playerId,gamesPlayed ,spirit, last_mult * spirit, teamsId.Find(tmp_team)->InfoPtr()->getGamesCounter(), 0);
+
+	///updating team details
+	AVLnode<Team>* target_team = this->teamsId.Find(tmp_team);
+	target_team->InfoPtr()->setPlayerNum(target_team->InfoPtr()->getNumOfPlayers() + 1);
+	target_team->InfoPtr()->setMultSpirits(spirit);
+	target_team->InfoPtr()->setAbiliteis(ability);
+	if(goalKeeper)
+	{
+		target_team->InfoPtr()->addGoalKeepersCtr();
+		target_team->InfoPtr()->setHasGoalKeeper(true);
+	}
+
+
+	//updating team in ability tree
+	tmp_team.setAbiliteis(target_team->InfoPtr()->getAbilities() - ability);
+	tmp_team.setSortingType(SortByInfo::ABILITIES);
+
+	Team* team_to_insert = new Team(teamId, target_team->InfoPtr()->getTotalPoints(), target_team->InfoPtr()->getNumOfPlayers(),
+										target_team->InfoPtr()->canParticipate(), target_team->InfoPtr()->getAbilities(), target_team->InfoPtr()->getMultSpirits());
+	
+	team_to_insert->setSortingType(SortByInfo::ABILITIES);
+
+	if(this->teamsAbilities.Find(tmp_team) == nullptr)
+	{
+		Team* team_to_insert = new Team(teamId, target_team->InfoPtr()->getTotalPoints(), target_team->InfoPtr()->getNumOfPlayers(),
+										target_team->InfoPtr()->canParticipate(), target_team->InfoPtr()->getAbilities(), target_team->InfoPtr()->getMultSpirits());
+		team_to_insert->setSortingType(SortByInfo::ABILITIES);
+		this->teamsAbilities.Insert(team_to_insert);
+	}
+	else
+	{
+		this->teamsAbilities.DeleteNode(this->teamsAbilities.Find(tmp_team)->InfoPtr());
+
+		Team* team_to_insert = new Team(teamId, target_team->InfoPtr()->getTotalPoints(), target_team->InfoPtr()->getNumOfPlayers(),
+										target_team->InfoPtr()->canParticipate(), target_team->InfoPtr()->getAbilities(), target_team->InfoPtr()->getMultSpirits());
+		
+		team_to_insert->setSortingType(SortByInfo::ABILITIES);
+		this->teamsAbilities.Insert(team_to_insert);
+	}
+
+	//PlayerInUF* new_player_inUF = new PlayerInUF(playerId, last_mult, teamsId.Find(tmp_team)->InfoPtr());
+
 
 	return StatusType::SUCCESS;
 }
@@ -120,7 +173,7 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 
 	AVLnode<Team>* team1 = this->teamsId.Find(team1_to_find);
 	AVLnode<Team>* team2 = this->teamsId.Find(team2_to_find);
-	if(team1 == nullptr || team2 == nullptr)
+	if(team1 == nullptr || team2 == nullptr || team1->InfoPtr()->canParticipate() == false || team2->InfoPtr()->canParticipate() == false)
 	{
 		return StatusType::FAILURE;
 	}
@@ -128,16 +181,56 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 	team1->Info().bumpGamesCounter();
 	team2->Info().bumpGamesCounter();
 
+	if(team1->Info().getScore() > team2->Info().getScore() || (team1->Info().getScore() == team2->Info().getScore() &&
+												 team1->InfoPtr()->getMultSpirits().strength() > team2->InfoPtr()->getMultSpirits().strength()))
+	{
+		team1->InfoPtr()->setPoints(3);
+	}
+
+	if(team1->Info().getScore() < team2->Info().getScore() || (team1->Info().getScore() == team2->Info().getScore() &&
+												team1->InfoPtr()->getMultSpirits().strength() < team2->InfoPtr()->getMultSpirits().strength()))
+	{
+		team2->InfoPtr()->setPoints(3);
+	}
+
+	if(team1->Info().getScore() == team2->Info().getScore() &&
+				 team1->InfoPtr()->getMultSpirits().strength() == team2->InfoPtr()->getMultSpirits().strength())
+	{
+		team1->InfoPtr()->setPoints(1);
+		team2->InfoPtr()->setPoints(1);
+	}
 	
-
-
 
 	return StatusType::SUCCESS;
 }
 
 output_t<int> world_cup_t::num_played_games_for_player(int playerId)
 {
-	// TODO: Your code goes here
+
+	if(playerId <= 0)
+	{
+		return StatusType::INVALID_INPUT; 
+	}
+
+	if(allPlayers.Find(playerId) == false)
+	{
+		return StatusType::FAILURE; 
+	}
+
+	int index_in_uf = allPlayers.GetPlayer(playerId)->getIndexInUF();
+	int parent_index = unionfind.getElement(index_in_uf)->parent;
+	int next_index= parent_index;
+	int delta_sum = 0 ;
+	//now we calculate by the equation
+	while(unionfind.getElement(next_index)->parent != parent_index)
+	{
+		delta_sum +=  unionfind.getElement(next_index)->delta_games;
+		next_index = unionfind.getElement(next_index)->parent;
+	}
+
+	int num = unionfind.getElement(parent_index)->team->getGamesCounter() + delta_sum - unionfind.getElement(index_in_uf)->games_played;
+
+	return num;
 	return 22;
 }
 
@@ -203,12 +296,7 @@ output_t<int> world_cup_t::get_team_points(int teamId)
 output_t<int> world_cup_t::get_ith_pointless_ability(int i)
 {
 	// TODO: Your code goes here
-	if(i < 0)
-	{
-		return StatusType::INVALID_INPUT;
-	}
-
-	if(this->teamsAbilities.NumOfElements() < i)
+	if(this->teamsAbilities.NumOfElements() == 0 || this->teamsAbilities.NumOfElements() < i || i < 0)
 	{
 		return StatusType::FAILURE;
 	}
@@ -219,12 +307,50 @@ output_t<int> world_cup_t::get_ith_pointless_ability(int i)
 //Asaad
 output_t<permutation_t> world_cup_t::get_partial_spirit(int playerId)
 {
-	// TODO: Your code goes here
-	return permutation_t();
+	//invalid input
+	if(playerId <= 0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	
+	//player is not found
+	if(allPlayers.Find(playerId) == false)
+	{
+		return StatusType::FAILURE;	
+	}
+	
+	//find player inside the hash table
+	int index_in_uf = allPlayers.GetPlayer(playerId)->getIndexInUF();
+	//player got exceluded out of the game
+	if(unionfind.getElement(index_in_uf)->team->isActive() == false)
+	{
+		return StatusType::FAILURE;	
+	}
+	
+	// then find the mult spirit for the playerInUF 
+	
+	return unionfind.calcMultSpirit(index_in_uf);
+	
 }
 
 StatusType world_cup_t::buy_team(int teamId1, int teamId2)
 {
-	// TODO: Your code goes here
+	if(teamId1 <=0 || teamId2 <=0)
+	{
+		return StatusType::INVALID_INPUT;
+	}
+	
+	Team tmp_team1 = Team(teamId1);
+	Team tmp_team2 = Team(teamId2);
+	
+	if(teamsId.Find(tmp_team1) == false || teamsId.Find(tmp_team2) == false)
+	{
+		return StatusType::FAILURE;
+	}
+
+	Team* team1_ptr =  teamsId.Find(tmp_team1)->InfoPtr();
+	Team* team2_ptr =  teamsId.Find(tmp_team2)->InfoPtr();
+
+	this->unionfind.Union(team1_ptr->getHeadOfTeam()->parent, team2_ptr->getHeadOfTeam()->parent);
 	return StatusType::SUCCESS;
 }

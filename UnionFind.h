@@ -2,12 +2,17 @@
 #define UnionFind
 
 #include <iostream>
-#include "Team.h"
+//#include "Team.h"
+
+class Team;
 
 class PlayerInUF
 {
     public:
     int playerId;
+    int games_played;
+    int initial_team_games;
+    int delta_games;
     permutation_t spirit;
     permutation_t multspirit;
     int parent;
@@ -15,8 +20,12 @@ class PlayerInUF
     Team* team; ///null for most elements, only the head of the group points to the team
     permutation_t to_mult;
 
-    PlayerInUF(int playerId, permutation_t spirit, permutation_t multspirit, Team* team = nullptr, int parent = 0, int tree_size = 0,
-                 permutation_t to_mult = permutation_t(new int[1,2,3,4,5])):playerId(playerId), spirit(spirit), multspirit(multspirit),team(team), parent(parent), tree_size(0){}
+    PlayerInUF(int playerId, int games_player, permutation_t spirit, permutation_t multspirit, 
+                int initial_team_games = 0, int delta_games = 0, Team* team = nullptr, int parent = 0, int tree_size = 0,
+                permutation_t to_mult = permutation_t(new int[1,2,3,4,5])):playerId(playerId), games_played(games_played),
+                initial_team_games(initial_team_games), delta_games(delta_games), spirit(spirit), multspirit(multspirit),team(team),
+                parent(parent), tree_size(0){}
+
     PlayerInUF():playerId(0), multspirit(), team(nullptr), parent(0), tree_size(1){};
     ~PlayerInUF()
     {
@@ -51,27 +60,28 @@ class UF
     public:
     UF();
     /// mult_before might change to spirit of player
-    void Insert(int PlayerId, permutation_t mult_before, Team* team);
+    void Insert(int PlayerId, permutation_t spirit, int games_played, Team* team);
     int getSize() const;
     int getIndex() const;
     void setSize(int new_size);
     PlayerInUF* getElement(int n);
     int Find(int n);
     bool JoinTeam(int n, int m);
-    bool Union(int n, int m);
+    void Union(int buyer, int bought);
     permutation_t getToMult(int n, permutation_t res, int* last_node);
     permutation_t getToDevide(int n, permutation_t res, int* last_node);
     void ShrinkPath(int root, int son);
+    permutation_t calcMultSpirit(int index);
     int Findaux(int a);
 };
 
 UF::UF():index(0), max_size(0),elements(nullptr){}
 
-void UF::Insert(int PlayerId, permutation_t spirit, Team* team)
+void UF::Insert(int PlayerId, permutation_t spirit, int games_played, Team* team)
 {
     if(elements == nullptr)
     {
-        *elements = new PlayerInUF(PlayerId, spirit, spirit, team, index);
+        *elements = new PlayerInUF(PlayerId, games_played, spirit, spirit, team->getGamesCounter(), 0, team, index, 1);
         team->setHeadOfTeam(0);
         max_size = 1;
         index++;
@@ -93,11 +103,9 @@ void UF::Insert(int PlayerId, permutation_t spirit, Team* team)
 
        delete[] old_uf_to_delete;
        delete new_arr;
-
     }
     
-    elements[index] = new PlayerInUF(PlayerId, spirit, spirit, team, index);
-    elements[index]->multspirit = team->getMultSpirits() * spirit; 
+    elements[index] = new PlayerInUF(PlayerId, games_played, spirit, team->getMultSpirits() * spirit, team->getGamesCounter());
     index++;
 
     if(team->getHeadOfTeam() != nullptr)
@@ -106,7 +114,12 @@ void UF::Insert(int PlayerId, permutation_t spirit, Team* team)
         JoinTeam(head_of_group, index);
         ///might need to update the head
     }
-
+    else
+    {
+        int head_of_group = index - 1;
+        team->setHeadOfTeam(elements[head_of_group]);
+        elements[index - 1]->team = team;
+    }
 }
 
 int UF::Find(int a)
@@ -163,19 +176,65 @@ bool UF::JoinTeam(int n, int m)
     elements[n]->tree_size += elements[m]->tree_size;
 }
 
-bool UF::Union(int n, int m)
+void UF::Union(int buyer, int bought)
 {
-    if(elements[n]->tree_size > elements[m]->tree_size)
+    int buyer_size = elements[buyer]->tree_size;
+    int bought_size = elements[bought]->tree_size;
+    
+
+    //updating the spirit mult
+    if(bought_size <= buyer_size)
     {
-        elements[m]->parent = n;
-        elements[n]->tree_size += elements[m]->tree_size;
+        elements[buyer]->to_mult = elements[buyer]->to_mult * elements[bought]->multspirit * elements[bought]->to_mult.inv();
     }
     else
     {
-        elements[n]->parent = m;
-        elements[m]->tree_size += elements[n]->tree_size;
+        elements[buyer]->to_mult = elements[buyer]->to_mult * elements[bought]->multspirit;
+        elements[bought]->to_mult = elements[bought]->to_mult * elements[buyer]->to_mult.inv();
     }
+
+    //updating the games played and delta games
+    if(bought_size <= buyer_size)
+    {
+        elements[bought]->delta_games = elements[bought]->team->getGamesCounter() - elements[buyer]->team->getGamesCounter();
+    }
+    else
+    {
+        elements[bought]->delta_games = elements[bought]->team->getGamesCounter() - elements[buyer]->team->getGamesCounter();
+        elements[buyer]->delta_games = elements[buyer]->team->getGamesCounter() - elements[bought]->team->getGamesCounter();
+    }
+
+    //uniting the 2 groups
+    if(bought_size <= buyer_size)
+    {
+        elements[bought]->parent = buyer;
+        elements[bought]->team->setHeadOfTeam(nullptr);
+        elements[bought]->team = nullptr;
+        elements[buyer]->tree_size += elements[bought]->tree_size;
+    }
+    else
+    {
+        elements[buyer]->parent = bought;
+        elements[bought]->tree_size += elements[buyer]->tree_size;
+
+        elements[buyer]->team->setHeadOfTeam(elements[bought]);
+        elements[bought]->team->setHeadOfTeam(nullptr);
+        elements[bought]->team = elements[buyer]->team;
+        elements[buyer]->team = nullptr;
+    }
+    
 }
+
+permutation_t UF::calcMultSpirit(int index)
+{
+    permutation_t res = permutation_t(new int[1,2,3,4,5]);
+    while(elements[index]->parent != index)
+    {
+        res = res * elements[index]->to_mult;
+    }
+    return res;
+}
+
 
 permutation_t UF::getToMult(int n, permutation_t res, int* last_node)
 {

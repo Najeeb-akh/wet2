@@ -27,7 +27,7 @@ class Player{
                                              int ability = 0, int cards = 0, bool goalKeeper = false, int index_in_uf = -1);
 
     
-    Player() = default;
+    Player():playerId(0){};
 
     ~Player()=default;
 

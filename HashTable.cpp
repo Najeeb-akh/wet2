@@ -43,7 +43,7 @@ int HashTable::hash_func(int key)
         int hash2 = 1 + (key%7);
         int hash_res = (x + i * hash2) % size;
 
-        for(int i = 0; table[hash_res].getID() != 0; i++)
+        for(int i = 0; hash_res < this->size && table[hash_res].getID() != 0 ; i++)
         {
             hash_res = (x + i * hash2) % size; 
         }
@@ -65,23 +65,25 @@ bool HashTable::reHash(int new_size)
         return false; //shouldn't get here
     }
 
-    int prev_size = size;
-    size = new_size;
+    int prev_size = this->size;
+    this->size = new_size;
 
-    Player* new_table = new Player[size];
-    Player current_element;
+    Player* new_table = new Player[this->size];
+    Player* tmp_table = new Player[prev_size];
 
+    tmp_table = table;
+    table = new_table;
+
+    Player current_element = Player();
     int hash_res;
     for(int i=0; i < prev_size; i++)
     {
         current_element = table[i];
-        hash_res = hash_func(current_element.getID());
-        new_table[hash_res] = Player(current_element);
-        // if(new_table[hash_res].Insert(current_element.getID(), current_element.getID()) == false)
-        // {
-        //     return false;
-        // }
-        //current_element = node_ptr->getNext();
+        if(current_element.getID() != 0)
+        {
+            hash_res = hash_func(current_element.getID());
+            new_table[hash_res] = Player(current_element);
+        }
     }
 
     ///might need to destroy the other table
@@ -96,8 +98,6 @@ bool HashTable::reHash(int new_size)
         delete table;
         table = nullptr;
     }
-    
-    table = new_table;
     return true;
 }
 

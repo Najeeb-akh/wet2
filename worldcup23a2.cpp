@@ -38,6 +38,10 @@ StatusType world_cup_t::add_team(int teamId)
 
 	Team* team_to_insert = new Team(teamId);
 	this->teamsId.Insert(team_to_insert);
+
+	Team* team_by_ability_to_insert = new Team(teamId);
+	team_by_ability_to_insert->setSortingType(SortByInfo::ABILITIES);
+	this->teamsAbilities.Insert(team_by_ability_to_insert);
 	return StatusType::SUCCESS;
 }
 
@@ -62,25 +66,28 @@ StatusType world_cup_t::remove_team(int teamId)
 
 	AVLnode<Team>* team_by_ability_to_delete = this->teamsAbilities.Find(*team_to_find);
 
-	delete team_to_find;
+	//delete team_to_find;
 	PlayerInUF* headOfGroup = team_to_delete->InfoPtr()->getHeadOfTeam();
 
-	team_to_delete->Info().setHeadOfTeam(nullptr);
-	team_to_delete->Info().deactivateTeam();
-
-	team_by_ability_to_delete->Info().setHeadOfTeam(nullptr);
-	team_by_ability_to_delete->Info().deactivateTeam();
+	team_to_delete->InfoPtr()->setHeadOfTeam(nullptr);
+	team_to_delete->InfoPtr()->deactivateTeam();
+	
+	team_by_ability_to_delete->InfoPtr()->setHeadOfTeam(nullptr);
+	team_by_ability_to_delete->InfoPtr()->deactivateTeam();
 
 	Team* team_outside_of_tree = new Team(team_to_delete->InfoPtr()->getTeamId(), team_to_delete->InfoPtr()->getTotalPoints(),
 										 team_to_delete->InfoPtr()->getNumOfPlayers(), true, team_to_delete->InfoPtr()->getAbilities()
 										 ,team_to_delete->InfoPtr()->getMultSpirits(), team_to_delete->InfoPtr()->getGamesCounter());
 										 
-	
-	headOfGroup->team = team_outside_of_tree;
+
+	if(team_to_delete->InfoPtr()->getHeadOfTeam() != NULL)
+	{
+		headOfGroup->team = team_outside_of_tree;
+	}
 	this->teamsId.DeleteNode(team_to_delete->InfoPtr());
 	this->teamsAbilities.DeleteNode(team_by_ability_to_delete->InfoPtr());
 
-	return StatusType::FAILURE;
+	return StatusType::SUCCESS;
 }
 
 //Najeeb

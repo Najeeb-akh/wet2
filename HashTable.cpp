@@ -90,14 +90,16 @@ bool HashTable::reHash(int new_size)
     
     if(prev_size > 1)
     {
-        delete [] table;
-        table = nullptr;
+        delete [] tmp_table;
+        tmp_table = nullptr;
     }
     else 
     {
-        delete table;
-        table = nullptr;
+        delete tmp_table;
+        tmp_table = nullptr;
     }
+    
+    table = new_table;
     return true;
 }
 

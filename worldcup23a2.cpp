@@ -13,7 +13,7 @@ world_cup_t::world_cup_t()
 	this->teamsId = RankTree<Team>();
 	this->teamsAbilities= RankTree<Team>();
 	this->allPlayers = HashTable();
-	this->unionfind = UF() ;
+	this->unionfind = UF();
 
 }
 
@@ -115,16 +115,9 @@ StatusType world_cup_t::add_player(int playerId, int teamId,
 		return StatusType::FAILURE;
 	}
 	
-	//insertion into the union find structure
-	
-	//save the previos mult_spirit
-	int last_index = unionfind.getIndex();
-	permutation_t last_mult = (teamsId.Find(tmp_team)->InfoPtr()->getMultSpirits());
-
-	PlayerInUF* new_player_in_uf = new PlayerInUF(playerId,gamesPlayed ,spirit, last_mult * spirit, teamsId.Find(tmp_team)->InfoPtr()->getGamesCounter(), 0);
-
-	///updating team details
+	//insertion into the union find structure and updating team details
 	AVLnode<Team>* target_team = this->teamsId.Find(tmp_team);
+	this->unionfind.Insert(playerId, spirit, gamesPlayed, target_team->InfoPtr());
 	target_team->InfoPtr()->setPlayerNum(target_team->InfoPtr()->getNumOfPlayers() + 1);
 	target_team->InfoPtr()->setMultSpirits(spirit);
 	target_team->InfoPtr()->setAbiliteis(ability);
@@ -189,27 +182,41 @@ output_t<int> world_cup_t::play_match(int teamId1, int teamId2)
 	team1->Info().bumpGamesCounter();
 	team2->Info().bumpGamesCounter();
 
-	if(team1->Info().getScore() > team2->Info().getScore() || (team1->Info().getScore() == team2->Info().getScore() &&
-												 team1->InfoPtr()->getMultSpirits().strength() > team2->InfoPtr()->getMultSpirits().strength()))
+	if(team1->Info().getScore() > team2->Info().getScore())
 	{
 		team1->InfoPtr()->setPoints(3);
+		return 1;
+	}
+	if(team1->Info().getScore() == team2->Info().getScore() && team1->InfoPtr()->getMultSpirits().strength() >
+																		 team2->InfoPtr()->getMultSpirits().strength())
+	{
+		team1->InfoPtr()->setPoints(3);
+		return 2;
 	}
 
-	if(team1->Info().getScore() < team2->Info().getScore() || (team1->Info().getScore() == team2->Info().getScore() &&
-												team1->InfoPtr()->getMultSpirits().strength() < team2->InfoPtr()->getMultSpirits().strength()))
+	if(team1->Info().getScore() < team2->Info().getScore())
 	{
 		team2->InfoPtr()->setPoints(3);
+		return 3;
 	}
+	if(team1->Info().getScore() == team2->Info().getScore() && team1->InfoPtr()->getMultSpirits().strength() <
+																		 team2->InfoPtr()->getMultSpirits().strength())
+	{
+		team2->InfoPtr()->setPoints(3);
+		return 4;
+	}
+												
 
 	if(team1->Info().getScore() == team2->Info().getScore() &&
 				 team1->InfoPtr()->getMultSpirits().strength() == team2->InfoPtr()->getMultSpirits().strength())
 	{
 		team1->InfoPtr()->setPoints(1);
 		team2->InfoPtr()->setPoints(1);
+		return 0;
 	}
 	
 
-	return StatusType::SUCCESS;
+	return 5;
 }
 
 output_t<int> world_cup_t::num_played_games_for_player(int playerId)

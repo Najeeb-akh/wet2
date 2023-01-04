@@ -1,15 +1,27 @@
 #include "UnionFind.h"
 
-UF::UF():index(0), max_size(0),elements(nullptr){}
+UF::UF():index(0), max_size(0)
+{
+    PlayerInUF* dummy = new PlayerInUF(0,0,permutation_t(),permutation_t());
+    PlayerInUF** tmp = new PlayerInUF*[1];
+    tmp[0] = dummy;
+    elements = tmp;
+    tmp = nullptr;
+}
 
 void UF::Insert(int PlayerId, permutation_t spirit, int games_played, Team* team)
 {
-    if(elements == nullptr)
+    if(elements[0]->playerId == 0)
     {
         *elements = new PlayerInUF(PlayerId, games_played, spirit, spirit, team->getGamesCounter(), 0, team, index, 1);
         team->setHeadOfTeam(0);
         max_size = 1;
         index++;
+
+        int head_of_group = index - 1;
+        team->setHeadOfTeam(elements[head_of_group]);
+        elements[index - 1]->team = team;
+        
         return;
     }
 

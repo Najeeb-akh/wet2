@@ -1,9 +1,10 @@
 #include "worldcup23a2.h"
-#include "Team.h"
-#include "RankTree.h"
-#include "HashTable.h"
-#include "UnionFind.h"
-#include "Player.h"
+// #include "Player.h"
+// #include "Team.h"
+// #include "RankTree.h"
+// #include "HashTable.h"
+// #include "UnionFind.h"
+
 
 
 //Najeeb
@@ -281,7 +282,7 @@ output_t<int> world_cup_t::get_team_points(int teamId)
 	{
 		return StatusType::INVALID_INPUT;
 	}
-	if(teamsId.Find(teamId) == false)
+	if(teamsId.Find(teamId) == nullptr)
 	{
 		return StatusType::FAILURE;
 	}
@@ -343,7 +344,7 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
 	Team tmp_team1 = Team(teamId1);
 	Team tmp_team2 = Team(teamId2);
 	
-	if(teamsId.Find(tmp_team1) == false || teamsId.Find(tmp_team2) == false)
+	if(teamsId.Find(tmp_team1) == nullptr || teamsId.Find(tmp_team2) == nullptr)
 	{
 		return StatusType::FAILURE;
 	}
@@ -352,5 +353,10 @@ StatusType world_cup_t::buy_team(int teamId1, int teamId2)
 	Team* team2_ptr =  teamsId.Find(tmp_team2)->InfoPtr();
 
 	this->unionfind.Union(team1_ptr->getHeadOfTeam()->parent, team2_ptr->getHeadOfTeam()->parent);
+	
+	this->teamsId.DeleteNode(&tmp_team2);
+	tmp_team2.setSortingType(SortByInfo::ABILITIES);
+	this->teamsAbilities.DeleteNode(&tmp_team2);
+	
 	return StatusType::SUCCESS;
 }

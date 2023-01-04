@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\WET2.dir/objects.a
+C:\TDM-GCC-64\bin\ar.exe qc CMakeFiles\WET2.dir/objects.a @CMakeFiles\WET2.dir\objects1
+C:\TDM-GCC-64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\WET2.dir/objects.a -Wl,--no-whole-archive -o WET2.exe -Wl,--out-implib,libWET2.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\WET2.dir\linkLibs.rsp

@@ -4,7 +4,6 @@
 #include "AVLnode.h"
 
 #define ILLEGAL_BF 2
-using std::shared_ptr;
 
 template <class T>
 class RankTree

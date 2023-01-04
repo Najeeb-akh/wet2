@@ -16,11 +16,12 @@
 #define WORLDCUP23A2_H_
 
 #include "wet2util.h"
-#include "Team.h"
+//#include "Player.h"
+//#include "Team.h"
 #include "RankTree.h"
 #include "HashTable.h"
 #include "UnionFind.h"
-#include "Player.h"
+
 
 class world_cup_t {
 private:

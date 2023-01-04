@@ -1,12 +1,12 @@
 #include "Team.h"
 #include "wet2util.h"
 
-Team::Team(int TeamId, int points, int player_num, bool has_goalkeeper,
-           int total_abilities, permutation_t mult_spirits, int games_counter , int goalkeeper_ctr,
-           SortByInfo sortingType, bool is_active, PlayerInUF* head_of_team = nullptr)
+
+Team::Team(int TeamId, int total_points, int player_num, bool has_goalkeeper, int total_abilities, permutation_t mult_spirits, int games_counter , int goalkeeper_ctr,
+           SortByInfo sortingType, bool is_active, PlayerInUF* head_of_team)
 {
     this->TeamId = TeamId;
-    this->total_points = points;
+    this->total_points = total_points;
     this->players_num = player_num;
     this->has_goalKeeper = has_goalkeeper;
     this->total_abilities = total_abilities;
@@ -160,14 +160,6 @@ int Team::getGoalkeepersCtr()
     return this->goalKeepersCtr;
 }
 
-int Team::getGamesCounter()
-{
-    return this->games_counter;
-}
-
-
-
-
 
 
 void Team::setId(int new_id)
@@ -215,4 +207,44 @@ void Team::bumpGamesCounter()
 bool Team::canParticipate()
 {
     return this->has_goalKeeper;
+}
+
+int Team::getGamesCounter()
+{
+    return this->games_counter;
+}
+
+SortByInfo Team::getSortingType()
+{
+    return this->sortingType;
+}
+
+PlayerInUF* Team::getHeadOfTeam()
+{
+    return this->head_of_team;
+}
+
+bool Team::isActive()
+{
+    return this->is_active;
+}
+
+void Team::setSortingType(SortByInfo sortbyinfo)
+{
+    this->sortingType = sortbyinfo;
+}
+
+void Team::setHeadOfTeam(PlayerInUF* new_head)
+{
+    this->head_of_team = new_head;
+}
+
+void Team::deactivateTeam()
+{
+    this->is_active = false;
+}
+
+void Team::setHasGoalKeeper(bool changed_value)
+{
+    this->has_goalKeeper = changed_value;
 }

@@ -4,6 +4,8 @@
 #include "wet2util.h"
 #include "UnionFind.h"
 
+class PlayerInUF;
+
 typedef enum{
     TEAM_ID = 0,
     ABILITIES = 1,
@@ -11,6 +13,9 @@ typedef enum{
 
 class Team
 {
+
+
+    public:
     int TeamId;
     int total_points;
     int players_num;
@@ -22,8 +27,6 @@ class Team
     SortByInfo sortingType;
     bool is_active;
     PlayerInUF* head_of_team;
-
-    public:
     /**
      * @brief Construct a new Team object
      * 
@@ -32,7 +35,7 @@ class Team
      */
         // Team(int TeamId, int points);
 
-        Team(int TeamId, int points= 0, int player_num = 0, bool has_goalkeeper=false,
+        Team(int TeamId, int total_points= 0, int player_num = 0, bool has_goalkeeper=false,
                          int total_abilities = 0, permutation_t mult_spirits = permutation_t(), int games_counter = 0, int goalKeeperCtr = 0,
                          SortByInfo sortingType = TEAM_ID, bool is_active = true, PlayerInUF* head_of_team = nullptr);
         /**
@@ -240,6 +243,7 @@ class Team
         void setSortingType(SortByInfo new_info);
 
         void deactivateTeam();
+        
 
         //-------------helper functions-----------
 

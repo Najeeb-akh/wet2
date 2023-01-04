@@ -4,7 +4,6 @@
 #include "AVLnode.h"
 #include "wet2util.h"
 
-class Team;
 //class permutation_t;
 
 class Player{

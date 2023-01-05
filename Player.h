@@ -23,7 +23,7 @@ class Player{
 
     public:
 
-    Player(int playerId, const permutation_t &spirit, int gamesPlayed = 0, int games_before_joining = 0,
+    Player(int playerId, permutation_t spirit, int gamesPlayed = 0, int games_before_joining = 0,
                                              int ability = 0, int cards = 0, bool goalKeeper = false, int index_in_uf = -1);
 
     

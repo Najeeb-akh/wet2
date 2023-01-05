@@ -2,9 +2,9 @@
 #include "Player.h"
 
 
-Player::Player(int playerId, const permutation_t &spirit, int gamesPlayed, int games_before_joining,
-    int ability, int cards, bool goalKeeper, int index_in_uf): playerId(playerId), spirit(spirit), gamesPlayed(gamesPlayed), games_before_joining(games_before_joining),
-    ability(ability), cards(cards), goalkeeper(goalkeeper), index_in_uf(index_in_uf){}
+Player::Player(int playerId, permutation_t spirit, int gamesPlayed, int games_before_joining,
+                int ability, int cards, bool goalKeeper, int index_in_uf): playerId(playerId), spirit(spirit), gamesPlayed(gamesPlayed), games_before_joining(games_before_joining),
+                 ability(ability), cards(cards), goalkeeper(goalKeeper), index_in_uf(index_in_uf){}
 
 
 Player& Player::operator=(const Player& other_player)
@@ -15,13 +15,13 @@ Player& Player::operator=(const Player& other_player)
     }
 
     this->playerId = other_player.playerId;
+    this->spirit = other_player.spirit;
     this->gamesPlayed = other_player.gamesPlayed;
-    this->cards = other_player.cards;
     this->games_before_joining = other_player.games_before_joining;
+    this->ability = other_player.ability;
     this->cards = other_player.cards;
     this->goalkeeper = other_player.goalkeeper;
-    this->ability = other_player.ability;
-    this->spirit = other_player.spirit;
+    this->index_in_uf = other_player.index_in_uf;
 
     return *this;
 }

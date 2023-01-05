@@ -13,7 +13,25 @@ HashTable::HashTable(int size)
     {
         this->size = 1;
     }
-    table = nullptr;
+    
+    if(size == 1)
+    {
+        //Player dummy = Player(0,permutation_t(new int[1,2,3,4,5]));
+        Player* tmp = new Player(0, new int[1,2,3,4,5]);
+        //tmp[0] = dummy;
+        table = tmp;
+        tmp = nullptr;
+    }
+    else
+    {
+        Player* tmp = new Player[size];
+        for(int i = 0 ; i < size ; i++)
+        {
+            tmp[i] = Player(0, new int[1,2,3,4,5]);
+        }
+        table = tmp;
+        tmp = nullptr;
+    }
 }
 
 
@@ -78,7 +96,7 @@ bool HashTable::reHash(int new_size)
     int hash_res;
     for(int i=0; i < prev_size; i++)
     {
-        current_element = table[i];
+        current_element = tmp_table[i];
         if(current_element.getID() != 0)
         {
             hash_res = hash_func(current_element.getID());
@@ -127,10 +145,10 @@ void HashTable::clear()
  
 bool HashTable::Insert(Player* player_to_insert)
 {
-    if (num_of_elements == 0)
-    {
-        this->table = new Player();
-    }
+    // if (num_of_elements == 0)
+    // {
+    //     this->table = new Player();
+    // }
 
     int hash_res = hash_func(player_to_insert->getID());
     table[hash_res] = Player(*player_to_insert);

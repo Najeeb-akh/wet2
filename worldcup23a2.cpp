@@ -12,7 +12,7 @@ world_cup_t::world_cup_t()
 {
 	this->teamsId = RankTree<Team>();
 	this->teamsAbilities= RankTree<Team>();
-	this->allPlayers = HashTable();
+	this->allPlayers = HashTable(1);
 	this->unionfind = UF();
 
 }

@@ -24,7 +24,7 @@ class PlayerInUF
 
     PlayerInUF(int playerId, int games_played, permutation_t spirit, permutation_t multspirit, 
                 int initial_team_games = 0, int delta_games = 0, Team* team = nullptr, int parent = 0, int tree_size = 0,
-                permutation_t to_mult = permutation_t(new int[0,1,2,3,4])):playerId(playerId), games_played(games_played), spirit(spirit),
+                permutation_t to_mult = permutation_t::neutral()):playerId(playerId), games_played(games_played), spirit(spirit),
                  multspirit(multspirit), initial_team_games(initial_team_games), delta_games(delta_games),team(team),
                 parent(parent), tree_size(0){}
 
